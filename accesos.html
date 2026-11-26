@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Cómo darnos acceso · Vinku</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500..700&family=DM+Sans:wght@400..700&display=swap">
+<style>
+/* VOICE: cercano y claro, de tú; pasos cortos que se siguen con el móvil en la mano.
+   IDEA: la hoja de instrucciones que deja un técnico de confianza.
+   PICTURE: tres tarjetas numeradas, una por plataforma, con los datos a copiar arriba.
+   COLOUR and TYPE: arena clara, tarjetas blancas, terracota para los números, mar para los enlaces; Fraunces + DM Sans.
+   LAYOUT: una columna de 720px, datos para copiar fijos arriba, pasos en lista. */
+:root{color-scheme:light;--bg:#FBF6EF;--card:#FFFFFF;--arena:#F1DFC8;--line:#E6D9C8;--ink:#2A211B;--muted:#6B5E53;--terra:#C4532F;--terra-soft:#F6DDD2;--mar:#1E5470}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 'DM Sans',Arial,sans-serif;overflow-x:clip}
+h1,h2{font-family:'Fraunces',Georgia,serif;font-weight:600;line-height:1.1;margin:0;text-wrap:balance}
+h1{font-size:clamp(32px,6vw,44px)}h2{font-size:24px}
+p{margin:0}a{color:var(--mar)}
+main{max-width:760px;margin:0 auto;padding:32px 20px 80px;display:flex;flex-direction:column;gap:20px}
+.hero{display:flex;flex-direction:column;gap:12px}
+.lead{font-size:18px;color:var(--muted)}
+.data{background:var(--arena);border-radius:20px;padding:20px;display:flex;flex-direction:column;gap:12px}
+.row{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;justify-content:space-between}
+.row .k{font-size:14px;color:var(--muted)}
+.row .v{font-weight:600;font-size:18px;overflow-wrap:anywhere}
+.copy{font:600 15px 'DM Sans',Arial,sans-serif;background:var(--card);color:var(--mar);border:1.5px solid var(--line);border-radius:12px;padding:10px 16px;min-height:44px;cursor:pointer}
+.copy:focus-visible{outline:2px solid var(--mar);outline-offset:2px}
+.card{background:var(--card);border-radius:24px;padding:26px;display:flex;flex-direction:column;gap:14px;box-shadow:0 8px 24px rgba(42,33,27,.06)}
+.card .n{font-size:14px;font-weight:600;color:var(--terra)}
+ol{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:8px}
+.note{font-size:14px;color:var(--muted)}
+.tag{display:inline-block;background:var(--terra-soft);font-size:13px;font-weight:600;padding:2px 10px;border-radius:99px;margin-left:6px;vertical-align:2px}
+.foot{font-size:13px;color:var(--muted);text-align:center;margin-top:8px}
+@media(max-width:600px){.card{padding:22px 18px;border-radius:20px}}
+</style>
+</head>
+<body>
+<main>
+<section class="hero">
+<h1>Cómo darnos acceso</h1>
+<p class="lead">Solo si has elegido invitarnos como administradores. Son unos minutos, sigues siendo el propietario de todo y puedes quitarnos el acceso cuando quieras.</p>
+<p class="note">Cal.com, WhatsApp y el dominio los dejamos listos contigo en la llamada de arranque: no tienes que hacer nada con ellos.</p>
+</section>
+
+<section class="data" aria-label="Datos para copiar">
+<div class="row"><div><p class="k">Nuestro correo</p><p class="v" id="mail">julio@vinku.es</p></div><button class="copy" data-copy="mail" type="button">Copiar</button></div>
+<div class="row"><div><p class="k">ID de empresa de Vinku en Meta</p><p class="v" id="metaid">1141573691987227</p></div><button class="copy" data-copy="metaid" type="button">Copiar</button></div>
+</section>
+
+<section class="card">
+<p class="n">1 · Ficha de Google</p>
+<h2>Perfil de Empresa en Google</h2>
+<ol>
+<li>Con la cuenta de Google de tu negocio, busca en Google el nombre de tu negocio. Arriba te saldrá tu ficha con las opciones para gestionarla.</li>
+<li>Pulsa el menú <b>⋮</b> (tres puntos) y entra en <b>Configuración del Perfil de Empresa</b> → <b>Personas y acceso</b>.</li>
+<li>Pulsa <b>Añadir</b>, escribe <b>julio@vinku.es</b> y elige el rol <b>Administrador</b>.</li>
+<li>Pulsa <b>Invitar</b>.</li>
+</ol>
+</section>
+
+<section class="card">
+<p class="n">2 · Facebook e Instagram</p>
+<h2>Meta (Facebook, Instagram y anuncios)</h2>
+<ol>
+<li>Desde un ordenador, entra en <a href="https://business.facebook.com/settings" rel="noopener">business.facebook.com/settings</a> con tu cuenta.</li>
+<li>En el menú de la izquierda: <b>Usuarios</b> → <b>Socios</b> → <b>Añadir</b> → <b>Dar a un socio acceso a tus activos</b>.</li>
+<li>Pega el ID de Vinku: <b>1141573691987227</b>.</li>
+<li>Marca tu página de Facebook y tu cuenta de Instagram (y la cuenta publicitaria, si vamos a hacer anuncios) con <b>control total</b>, y guarda.</li>
+</ol>
+<p class="note">Si no tienes una cuenta de empresa en Meta o no ves estas opciones, no hagas nada: la creamos contigo en la llamada.</p>
+</section>
+
+<section class="card">
+<p class="n">3 · Calendario <span class="tag">Opcional</span></p>
+<h2>Calendario de Google</h2>
+<ol>
+<li>Desde un ordenador (desde el móvil no se puede), abre <a href="https://calendar.google.com" rel="noopener">calendar.google.com</a>.</li>
+<li>A la izquierda, en <b>Mis calendarios</b>, pasa el ratón por tu calendario, pulsa <b>⋮</b> → <b>Configuración y uso compartido</b>.</li>
+<li>En <b>Compartir con personas o grupos específicos</b>, pulsa <b>Añadir personas y grupos</b> y escribe <b>julio@vinku.es</b>.</li>
+<li>Elige el permiso <b>Hacer cambios en los eventos</b> y pulsa <b>Enviar</b>.</li>
+</ol>
+</section>
+
+<section class="card">
+<h2>Cuando termines</h2>
+<p>Escríbenos por WhatsApp o a <b>hola@vinku.es</b> y aceptamos las invitaciones. Si algún menú no aparece igual o te atascas, no pasa nada: lo hacemos juntos en la llamada de arranque.</p>
+</section>
+
+<p class="foot">Vinku · hola@vinku.es · vinku.es</p>
+</main>
+<script>
+{
+  for (const b of document.querySelectorAll('[data-copy]')) {
+    b.addEventListener('click', async () => {
+      const text = document.getElementById(b.dataset.copy).textContent.trim();
+      try { await navigator.clipboard.writeText(text); b.textContent = 'Copiado'; }
+      catch (e) { b.textContent = 'Mantén pulsado para copiar'; }
+      setTimeout(() => { b.textContent = 'Copiar'; }, 2000);
+    });
+  }
+}
+</script>
+</body>
+</html>

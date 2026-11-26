@@ -133,7 +133,8 @@ const S = [
    { k:'gmail', l:'Tu Gmail', type:'email', req:1, ac:'email', when:showGmail, h:'Con él van tu calendario, la agenda de reservas y tu ficha de Google Maps.' },
    { k:'gmail_solo', l:'¿Ese Gmail lo usas solo tú?', type:'radio', inline:1, opts:YESNO, when:showGmail },
    { k:'acc', l:'Cuentas que ya tienes', h:'Marca las que tengas y escribe el usuario o el enlace.', type:'accounts', opts:[['instagram','Instagram'],['facebook','Página de Facebook'],['maps','Ficha de Google Maps'],['wab','WhatsApp Business'],['dominio_prev','Dominio o web anterior'],['agenda','Otra agenda de citas']] },
-   { k:'acceso', l:'¿Cómo nos das acceso a tus cuentas?', type:'radio', req:1, h:'No escribas contraseñas en este formulario. Ten el móvil a mano: algunas plataformas envían un código al entrar desde otro dispositivo.', opts:[['llamada','Te paso usuario y contraseña en la llamada de arranque','Cuando terminemos de configurarlo todo, cambias la contraseña.',1],['invitar','Os invito como administradores','Te mandamos unas instrucciones cortas, paso a paso.']] } ]},
+   { k:'acceso', l:'¿Cómo nos das acceso a tus cuentas?', type:'radio', req:1, h:'No escribas contraseñas en este formulario. Ten el móvil a mano: algunas plataformas envían un código al entrar desde otro dispositivo.', opts:[['llamada','Te paso usuario y contraseña en la llamada de arranque','Cuando terminemos de configurarlo todo, cambias la contraseña.',1],['invitar','Os invito como administradores','Te mandamos unas instrucciones cortas, paso a paso.']] },
+   { k:'acceso_info', type:'link', l:'Ver las instrucciones para invitarnos', href:'accesos.html', when:st=>st.cuentas?.acceso==='invitar' } ]},
  { id:'dominio', when:st=>has(st,'dominio'), t:'Dominio', d:'Es la dirección de tu web. Si no lo tienes claro, te proponemos 2–3 nombres libres y eliges.', f:[
    { k:'nombre_preferido', l:'Nombre preferido', type:'text', ph:'tunegocio.es' },
    { k:'alternativas', l:'Alternativas', type:'text' },
@@ -222,6 +223,8 @@ function fieldHTML(s, f) {
     inner = `<fieldset><legend>${esc(f.l)}</legend>${help}${f.opts.map(([a, l]) => { const on = !!get(s, 'acc_' + a); return `<div class="acc">${optHTML('checkbox', id + a, s, 'acc_' + a, ['1', l], on)}<input type="text" aria-label="Usuario o enlace de ${esc(l)}" placeholder="Usuario o enlace" value="${esc(get(s, 'acc_' + a + '_v'))}" data-s="${s}" data-k="acc_${a}_v"${on ? '' : ' hidden'}></div>`; }).join('')}</fieldset>`;
   else if (f.type === 'rows')
     inner = `<fieldset><legend>${esc(f.l)}${req}</legend><div class="rows" id="${id}">${rowsHTML(s, f.k)}</div></fieldset>`;
+  else if (f.type === 'link')
+    inner = `<p class="help"><a href="${esc(f.href)}" target="_blank" rel="noopener" style="color:var(--mar);font-weight:600">${esc(f.l)} →</a></p>`;
   else if (f.type === 'info')
     inner = `<table><thead><tr><th>Concepto</th><th>Coste aproximado</th><th>Lo paga</th></tr></thead><tbody>${COSTES.map(r => `<tr>${r.map(c => `<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
   return `<div class="field" data-field="${id}">${inner}<p class="err" hidden>Falta este dato.</p></div>`;

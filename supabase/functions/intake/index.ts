@@ -26,6 +26,28 @@ const json = (req: Request, body: unknown, status = 200) =>
 const validToken = (t: unknown): t is string => typeof t === "string" && /^[a-f0-9]{64}$/.test(t);
 const isObj = (v: unknown) => typeof v === "object" && v !== null && !Array.isArray(v);
 
+// Aviso a Julio por Telegram (secretos TELEGRAM_BOT_TOKEN y TELEGRAM_CHAT_ID). Sin secretos, no hace nada.
+async function notify(text: string) {
+  const token = Deno.env.get("TELEGRAM_BOT_TOKEN"), chat = Deno.env.get("TELEGRAM_CHAT_ID");
+  if (!token || !chat) return;
+  try {
+    await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ chat_id: chat, text, disable_web_page_preview: true }),
+      signal: AbortSignal.timeout(5000),
+    });
+  } catch (e) {
+    console.error("telegram", e);
+  }
+}
+const LABELS: Record<string, string> = {
+  gmail: "su Gmail", reenvio: "correo con dominio reenviado a Gmail", zoho: "buzón propio con dominio",
+  llamada: "usuario y contraseña en la llamada", invitar: "nos invita como administradores",
+  nueva: "línea nueva", actual: "su número actual (coexistencia)", ninguno: "sin WhatsApp",
+};
+const label = (v: unknown) => (typeof v === "string" ? LABELS[v] ?? v : "—");
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: cors(req) });
   try {
@@ -38,12 +60,13 @@ Deno.serve(async (req) => {
       if (error) throw error;
       if (!row) return json(req, { error: "not_found" }, 404);
       if (new Date(row.expires_at) < new Date()) return json(req, { error: "expired" }, 410);
-      if (row.status === "sent") {
-        await sb.from("client_intakes").update({ status: "opened", opened_at: new Date().toISOString() }).eq("id", row.id);
-      }
-      const submitted = row.status === "submitted" || row.status === "reviewed";
       // deno-lint-ignore no-explicit-any
       const name = (row as any).clients?.name ?? "";
+      if (row.status === "sent") {
+        await sb.from("client_intakes").update({ status: "opened", opened_at: new Date().toISOString() }).eq("id", row.id);
+        await notify(`👀 ${name} ha abierto su formulario de alta.`);
+      }
+      const submitted = row.status === "submitted" || row.status === "reviewed";
       return json(req, {
         client_name: name,
         prefill: submitted && row.form_state ? row.form_state : row.prefill,
@@ -59,7 +82,7 @@ Deno.serve(async (req) => {
       if (!validToken(body?.t) || !isObj(body.answers)) return json(req, { error: "bad_request" }, 400);
 
       const { data: row, error } = await sb.from("client_intakes")
-        .select("id, expires_at").eq("token", body.t).maybeSingle();
+        .select("id, expires_at, status, clients(name)").eq("token", body.t).maybeSingle();
       if (error) throw error;
       if (!row) return json(req, { error: "not_found" }, 404);
       if (new Date(row.expires_at) < new Date()) return json(req, { error: "expired" }, 410);
@@ -82,7 +105,20 @@ Deno.serve(async (req) => {
       const { error: e2 } = await sb.rpc("apply_intake", { _id: row.id });
       if (e2) throw e2;
 
-      const hook = Deno.env.get("INTAKE_NOTIFY_URL"); // webhook de n8n → aviso por Telegram
+      const a = body.answers;
+      const again = row.status === "submitted" || row.status === "reviewed";
+      // deno-lint-ignore no-explicit-any
+      const who = (row as any).clients?.name ?? "Un cliente";
+      await notify([
+        `✅ ${who} ${again ? "ha corregido y reenviado" : "ha enviado"} su formulario de alta.`,
+        `Servicios: ${services.length}`,
+        `Correo: ${label(a?.cuentas?.correo)}`,
+        `Accesos: ${label(a?.cuentas?.acceso)}`,
+        a?.whatsapp?.opcion ? `WhatsApp: ${label(a.whatsapp.opcion)}` : "",
+        "Revisa sus respuestas en el backoffice (pestaña Alta).",
+      ].filter(Boolean).join("\n"));
+
+      const hook = Deno.env.get("INTAKE_NOTIFY_URL"); // webhook opcional de n8n
       if (hook) {
         fetch(hook, {
           method: "POST",
