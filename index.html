@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Alta de cliente · Vinku</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500..700&family=DM+Sans:wght@400..700&display=swap">
+<style>
+/* VOICE: cercano y claro, de tú, sin tecnicismos.
+   IDEA: la ficha de alta de toda la vida, en papel bueno, que se rellena en el móvil.
+   PICTURE: el propio formulario, en una columna tranquila con tarjetas por apartado.
+   COLOUR and TYPE: arena clara, tarjetas blancas, terracota para lo recomendado y el botón, mar para el foco; Fraunces + DM Sans.
+   LAYOUT: barra superior con logo y progreso, una columna de 720px, botón de envío al final. */
+:root{color-scheme:light;--bg:#FBF6EF;--card:#FFFFFF;--arena:#F1DFC8;--line:#E6D9C8;--ink:#2A211B;--muted:#6B5E53;--terra:#C4532F;--terra-soft:#F6DDD2;--mar:#1E5470;--olivo:#5E7A3A;--err:#A33A1C}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 'DM Sans',Arial,sans-serif;overflow-x:clip}
+h1,h2{font-family:'Fraunces',Georgia,serif;font-weight:600;line-height:1.1;margin:0;text-wrap:balance}
+h1{font-size:clamp(32px,6vw,46px)}h2{font-size:24px}
+p{margin:0}
+.top{position:sticky;top:0;z-index:5;background:rgba(251,246,239,.94);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+.top-in{max-width:760px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;gap:16px}
+.top svg{height:34px;width:auto;flex:none}
+.prog{flex:1;display:flex;flex-direction:column;gap:6px;align-items:flex-end}
+.prog small{font-size:13px;color:var(--muted)}
+.bar{width:100%;max-width:240px;height:8px;background:var(--arena);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--olivo);border-radius:99px;transition:width .3s}
+main{max-width:760px;margin:0 auto;padding:32px 20px 96px}
+.hero{display:flex;flex-direction:column;gap:14px;margin-bottom:28px}
+.hero .lead{font-size:18px;color:var(--muted)}
+.hero ul{margin:4px 0 0;padding-left:20px;color:var(--muted)}
+.rec-note{display:inline-flex;gap:8px;align-items:center}
+.badge{display:inline-block;background:var(--terra-soft);color:var(--ink);font-size:13px;font-weight:600;padding:2px 10px;border-radius:99px;white-space:nowrap}
+.sec{background:var(--card);border-radius:24px;padding:28px;margin-bottom:20px;display:flex;flex-direction:column;gap:22px;box-shadow:0 8px 24px rgba(42,33,27,.06)}
+.sec[hidden],.field[hidden]{display:none}
+.sec-h{display:flex;flex-direction:column;gap:6px}
+.sec-h .num{font-size:14px;font-weight:600;color:var(--terra)}
+.sec-h .d{color:var(--muted)}
+.field{display:flex;flex-direction:column;gap:8px}
+.lab,legend{font-weight:600;font-size:16px;padding:0}
+.req{color:var(--terra);margin-left:3px}
+.help{font-size:14px;color:var(--muted)}
+fieldset{border:0;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+input[type=text],input[type=tel],input[type=email],textarea{width:100%;font:16px 'DM Sans',Arial,sans-serif;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:12px 14px;min-height:48px}
+textarea{min-height:96px;resize:vertical}
+input:focus-visible,textarea:focus-visible,button:focus-visible,.opt:focus-within{outline:2px solid var(--mar);outline-offset:2px}
+.opt{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;cursor:pointer;background:var(--card)}
+.opt input{width:20px;height:20px;margin:2px 0 0;accent-color:var(--terra);flex:none}
+.opt.on{border-color:var(--terra);background:#FFF9F5}
+.opt b{font-weight:600}
+.opt .sub{display:block;font-size:14px;color:var(--muted)}
+.opts2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.acc{display:grid;grid-template-columns:minmax(0,200px) minmax(0,1fr);gap:8px;align-items:center}
+.acc .opt{padding:10px 12px}
+.rows{display:flex;flex-direction:column;gap:10px}
+.row{display:grid;grid-template-columns:minmax(0,1fr) 90px 90px auto;gap:8px;align-items:end;padding-bottom:10px;border-bottom:1px solid var(--line)}
+.row label{font-size:13px;color:var(--muted);display:flex;flex-direction:column;gap:4px}
+.row .chk{flex-direction:row;align-items:center;gap:6px;min-height:48px;white-space:nowrap}
+.row .chk input{width:20px;height:20px;accent-color:var(--terra)}
+.btn{font:600 16px 'DM Sans',Arial,sans-serif;border:0;border-radius:14px;padding:14px 22px;min-height:48px;cursor:pointer}
+.btn.main{background:var(--terra);color:#fff}
+.btn.main[disabled]{opacity:.6;cursor:wait}
+.btn.ghost{background:transparent;color:var(--mar);padding:10px 4px;min-height:44px}
+.btn.x{background:transparent;color:var(--muted);padding:10px;min-height:48px}
+table{width:100%;border-collapse:collapse;font-size:15px}
+th{text-align:left;font-size:13px;color:var(--muted);font-weight:600;padding:0 10px 8px 0;border-bottom:1.5px solid var(--line)}
+td{padding:10px 10px 10px 0;border-bottom:1px solid var(--line);vertical-align:top}
+.field.invalid input,.field.invalid textarea,.field.invalid .opt{border-color:var(--err)}
+.err{color:var(--err);font-size:14px;font-weight:600}
+.send{display:flex;flex-direction:column;gap:12px;align-items:flex-start}
+.status{font-size:14px;color:var(--muted)}
+.status.bad{color:var(--err);font-weight:600}
+.done{background:var(--card);border-radius:24px;padding:32px 28px;display:flex;flex-direction:column;gap:14px}
+.done .ok{color:var(--olivo);font-weight:600}
+details{font-size:14px;color:var(--muted)}
+pre{overflow-x:auto;background:var(--bg);padding:12px;border-radius:10px;font-size:12px}
+.foot{margin-top:28px;font-size:13px;color:var(--muted);text-align:center}
+@media(max-width:600px){.sec{padding:22px 18px;border-radius:20px}.opts2{grid-template-columns:minmax(0,1fr)}.acc{grid-template-columns:minmax(0,1fr)}.row{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.row label:first-child{grid-column:1/-1}.bar{max-width:140px}}
+@media(prefers-reduced-motion:reduce){.bar i{transition:none}}
+</style>
+</head>
+<body>
+<header class="top"><div class="top-in"><svg role="img" aria-label="Vinku" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 211.3 68.0" fill="none"><g transform="translate(4 4) scale(0.7453) translate(-9.20 -24.80)"><rect x="23.848" y="27.036" width="30" height="76" rx="15.0" transform="rotate(-26 38.848 65.036)" fill="none" stroke="#C4532F" stroke-width="8"/><rect x="66.151" y="27.036" width="30" height="76" rx="15.0" transform="rotate(26 81.151 65.036)" fill="none" stroke="#1E5470" stroke-width="8"/><path d="M63.81 87.65 L63.87 87.09 L63.91 86.54 L63.93 85.98 L63.93 85.42 L63.91 84.86 L63.87 84.30 L63.80 83.75 L63.72 83.20 L63.62 82.65 L63.49 82.10 L63.35 81.56 L63.18 81.03 L63.00 80.50 L62.80 79.98 L62.57 79.47 L62.33 78.97 L62.09 78.46 L61.84 77.96 L61.60 77.46 L61.35 76.96 L61.11 76.45 L60.86 75.95 L60.62 75.45 L60.37 74.95 L60.13 74.45 L59.88 73.94 L59.64 73.44 L59.39 72.94 L59.15 72.44 L58.90 71.93 L58.66 71.43 L58.41 70.93 L58.17 70.43 L57.92 69.93 L57.68 69.42 L57.43 68.92 L57.19 68.42 L56.94 67.92 L56.70 67.41 L56.45 66.91 L56.21 66.41 L55.96 65.91 L55.72 65.41 L55.47 64.90 L55.23 64.40 L54.98 63.90 L54.78 63.48" fill="none" stroke="#C4532F" stroke-width="8" stroke-linecap="butt" stroke-linejoin="round"/></g><path fill="#1E5470" d="M102.05670612140916 50.79 94.2049575862529 27.974H100.7336782893779L106.2402466487529 45.808585205078124H106.35921100422166L111.8848150081279 27.974H118.34850006672166L110.49675153156541 50.79Z M120.7850288753154 50.79V27.974H126.99492780109665V50.79ZM123.90346051594041 24.879236572265626Q122.21417340656541 24.879236572265626 121.14032440754197 23.87484971671269Q120.06647540851853 22.87046286115975 120.06647540851853 21.36582373046875Q120.06647540851853 19.847840576171876 121.13827315274334 18.850920288085938Q122.21007089696815 17.854 123.90346051594041 17.854Q125.6006763362529 17.854 126.67928424640915 18.850920288085938Q127.7578921565654 19.847840576171876 127.7578921565654 21.370582641601562Q127.7578921565654 22.8663603515625 126.67928424640915 23.872798461914062Q125.6006763362529 24.879236572265626 123.90346051594041 24.879236572265626Z M131.37533283039355 50.79V27.974H136.75328424640915L137.25451691242478 31.747589111328125H137.3465169124248Q138.4425882014873 29.750553466796873 140.3761773128154 28.586276733398435Q142.30976642414353 27.422 145.0991060237529 27.422Q147.95585651203416 27.422 149.93385651203414 28.637821777343753Q151.91185651203415 29.8536435546875 152.95716888996384 32.205983154296874Q154.00248126789353 34.55832275390625 154.00248126789353 37.989287109375V50.79H147.81954669758105V38.5650732421875Q147.81954669758105 35.724146484375 146.66556549640916 34.186307861328125Q145.5115842952373 32.64846923828125 143.01012091633103 32.64846923828125Q141.4365862483623 32.64846923828125 140.2056763362529 33.41223657226563Q138.97476642414352 34.17600390625 138.27999909015915 35.58853857421875Q137.58523175617478 37.0010732421875 137.58523175617478 39.0219287109375V50.79Z M172.96008527179978 50.79 163.0065882014873 38.232 171.80215656086227 27.974H179.15569904133105L167.76514557453416 40.82539599609375L167.74769904133103 35.90824755859375L180.6863782405498 50.79ZM157.71033283039353 50.79V18.130000000000003H163.9202317561748V50.79Z M191.21260114094042 51.342Q188.39233283039354 51.342 186.40085065265916 50.139660400390625Q184.40936847492478 48.93732080078125 183.3640560969951 46.5714990234375Q182.31874371906542 44.20567724609375 182.31874371906542 40.774712890625V27.974H188.5016782893779V40.20056096117424Q188.5016782893779 43.051353515624996 189.65090057941697 44.58344213867187Q190.80012286945603 46.11553076171875 193.29713988394775 46.11553076171875Q194.89413465451582 46.11553076171875 196.12029660866563 45.351763427734376Q197.34645856281543 44.58799609375 198.0412258967998 43.17113715190273Q198.73599323078417 41.754278210055446 198.73599323078417 39.744299436083026V27.974H204.9458921565654V50.79H199.56794074054977L199.06670807453418 47.056857421875H198.97470807453416Q197.90163678547165 49.017410888671876 195.95852985187793 50.17970544433594Q194.01542291828417 51.342 191.21260114094042 51.342Z"/></svg><div class="prog"><small id="progTxt">Cargando…</small><div class="bar"><i id="progBar"></i></div></div></div></header>
+<main>
+<section class="hero" id="hero">
+<h1 id="title">Alta de cliente</h1>
+<p class="lead">Rellénalo una sola vez y nosotros nos encargamos del resto. Te llevará unos 15–20 minutos.</p>
+<ul>
+<li>Lo que lleva <span class="badge">Recomendada</span> ya está marcado: si te vale, no tienes que tocarlo.</li>
+<li>Lo que no sepas, déjalo en blanco y lo vemos en la llamada de arranque.</li>
+<li>Todas las cuentas quedan <b>a tu nombre</b>.</li>
+<li>Se guarda solo en este dispositivo mientras lo rellenas.</li>
+</ul>
+</section>
+<form id="f" novalidate></form>
+<section class="done" id="done" hidden></section>
+<p class="foot">Vinku · hola@vinku.es · vinku.es</p>
+</main>
+<script>
+{
+// URL de la función "intake" de Supabase. Vacía = modo demostración (no envía nada).
+const CONFIG = { api: 'https://dropavwogusvklzkxnhz.supabase.co/functions/v1/intake' };
+
+const DEMO = {
+  client_name: 'Peluquería Ejemplo',
+  services: ['web','reservas','web_agent'],
+  prefill: { negocio: { nombre_comercial: 'Peluquería Ejemplo', cp_localidad: '28001 Madrid', sector: 'Peluquería' } }
+};
+
+const DOMAIN_MAIL = ['reenvio','zoho'];
+const svc = st => { const s = new Set(st.servicios?.servicios || []); if (DOMAIN_MAIL.includes(st.cuentas?.correo)) { s.add('correo'); s.add('dominio'); } return s; };
+const has = (st, c) => svc(st).has(c);
+const showGmail = st => st.cuentas?.correo !== 'zoho' || st.cuentas?.google === 'gmail';
+const YESNO = [['si','Sí'],['no','No']];
+const S = [
+ { id:'negocio', t:'Datos del negocio y fiscales', d:'Los usamos para el aviso legal de la web, el titular del dominio y las facturas.', f:[
+   { k:'nombre_comercial', l:'Nombre comercial', type:'text', req:1 },
+   { k:'titular', l:'Nombre y apellidos del titular o razón social', type:'text', req:1, ac:'name' },
+   { k:'nif', l:'NIF o CIF', type:'text', req:1 },
+   { k:'direccion', l:'Dirección de la actividad', type:'text', ac:'street-address' },
+   { k:'cp_localidad', l:'Código postal y localidad', type:'text' },
+   { k:'telefono', l:'Teléfono de contacto con Vinku', type:'tel', req:1, ac:'tel' },
+   { k:'email', l:'Correo de contacto con Vinku', type:'email', req:1, ac:'email' },
+   { k:'sector', l:'Sector', type:'text' },
+   { k:'forma', l:'Forma jurídica', type:'radio', opts:[['autonomo','Autónomo/a'],['sociedad','Sociedad']] } ]},
+ { id:'servicios', t:'Servicios que contratas', d:'Marca los que quieres. El formulario te pedirá solo lo necesario para cada uno.', f:[
+   { k:'servicios', type:'checks', req:1, grid:1, opts:[['web','Web','Una página, adaptada al móvil'],['dominio','Dominio propio','tunegocio.es'],['reservas','Reservas online','Agenda con Cal.com y Google Calendar'],['web_agent','Asistente de IA en la web','Chat que contesta y reserva'],['wa_agent','Asistente de IA en WhatsApp'],['recordatorios','Recordatorios de cita'],['resenas','Petición de reseñas en Google','Tras cada cita'],['resumen','Resumen diario de reservas'],['gbp','Perfil de Empresa de Google','Alta u optimización'],['ads_meta','Publicidad en Instagram y Facebook'],['ads_google','Publicidad en Google']] },
+   { k:'otro', l:'Otro servicio', type:'text' } ]},
+ { id:'cuentas', t:'Correo y cuentas', d:'Primero, qué correo quieres usar con tus clientes. Con él van también tu calendario, la agenda de reservas y tu ficha de Google.', f:[
+   { k:'correo', l:'¿Qué correo quieres usar?', type:'radio', req:1, opts:[['gmail','Mi Gmail de siempre','Gratis y sin apps nuevas. Es el que aparecerá en tu web.',1],['reenvio','Un correo con mi dominio que me llegue al Gmail','Por ejemplo hola@tunegocio.es. Lo lees en tu Gmail, sin apps nuevas. Necesita dominio propio.'],['zoho','Un buzón propio con mi dominio','Bandeja aparte con su propia app (Zoho Mail, gratis hasta 5 usuarios). Útil si envías presupuestos o facturas por correo. Necesita dominio propio.']] },
+   { k:'direccion', l:'Dirección que quieres', type:'text', ph:'hola@tunegocio.es', h:'Te la creamos junto con el dominio.', when:st=>DOMAIN_MAIL.includes(st.cuentas?.correo) },
+   { k:'google', l:'Cuenta de Google para el calendario y la ficha de Google', type:'radio', when:st=>st.cuentas?.correo==='zoho', opts:[['nueva','Creadla con mi nuevo correo','Una cuenta de Google sin Gmail, solo para eso.',1],['gmail','Uso mi Gmail']] },
+   { k:'gmail', l:'Tu Gmail', type:'email', req:1, ac:'email', when:showGmail, h:'Con él van tu calendario, la agenda de reservas y tu ficha de Google Maps.' },
+   { k:'gmail_solo', l:'¿Ese Gmail lo usas solo tú?', type:'radio', inline:1, opts:YESNO, when:showGmail },
+   { k:'acc', l:'Cuentas que ya tienes', h:'Marca las que tengas y escribe el usuario o el enlace.', type:'accounts', opts:[['instagram','Instagram'],['facebook','Página de Facebook'],['maps','Ficha de Google Maps'],['wab','WhatsApp Business'],['dominio_prev','Dominio o web anterior'],['agenda','Otra agenda de citas']] },
+   { k:'acceso', l:'¿Cómo nos das acceso a tus cuentas?', type:'radio', req:1, h:'No escribas contraseñas en este formulario. Ten el móvil a mano: algunas plataformas envían un código al entrar desde otro dispositivo.', opts:[['llamada','Te paso usuario y contraseña en la llamada de arranque','Cuando terminemos de configurarlo todo, cambias la contraseña.',1],['invitar','Os invito como administradores','Te mandamos unas instrucciones cortas, paso a paso.']] } ]},
+ { id:'dominio', when:st=>has(st,'dominio'), t:'Dominio', d:'Es la dirección de tu web. Si no lo tienes claro, te proponemos 2–3 nombres libres y eliges.', f:[
+   { k:'nombre_preferido', l:'Nombre preferido', type:'text', ph:'tunegocio.es' },
+   { k:'alternativas', l:'Alternativas', type:'text' },
+   { k:'terminacion', l:'Terminación', type:'radio', opts:[['es','.es','La que más confianza da en España',1],['com','.com']] },
+   { k:'paga', l:'¿Quién lo paga?', h:'El dominio queda a tu nombre, con tus datos fiscales, en DonDominio.', type:'radio', opts:[['cliente','Lo pago yo','Unos 7–10 € al año un .es',1],['cuota','Incluido en la cuota de Vinku']] },
+   { k:'ya_tengo', l:'Si ya tienes dominio: cuál y dónde lo compraste', type:'text' } ]},
+ { id:'whatsapp', when:st=>has(st,'wa_agent')||has(st,'recordatorios'), t:'WhatsApp y número del asistente', d:'Con el modo coexistencia el número sigue en la app de tu móvil: ves lo que contesta el asistente y puedes intervenir cuando quieras.', f:[
+   { k:'opcion', l:'¿Qué número usamos?', type:'radio', req:1, opts:[['nueva','Una línea nueva solo para el negocio','Prepago o eSIM barata. No se mezcla con tus chats personales.',1],['actual','Mi número actual, pasado a WhatsApp Business','Conservas tus chats, pero el asistente solo responde a quien no está en tu agenda. Algo más de riesgo.'],['ninguno','Sin asistente en WhatsApp por ahora','Solo en la web.']] },
+   { k:'numero', l:'Número que usará el asistente', h:'Si aún no tienes la línea nueva, déjalo en blanco.', type:'tel', when:st=>st.whatsapp?.opcion!=='ninguno' },
+   { k:'tiene_wa', l:'¿Ese número tiene ya WhatsApp instalado?', type:'radio', inline:1, opts:YESNO, when:st=>st.whatsapp?.opcion!=='ninguno' },
+   { k:'titular_linea', l:'¿A nombre de quién está la línea?', type:'text', when:st=>st.whatsapp?.opcion!=='ninguno' },
+   { k:'horario_tu', l:'Horario en el que prefieres contestar tú', type:'text', ph:'Por ejemplo, de 9 a 14' },
+   { k:'recordatorios_canal', l:'Recordatorios de cita', type:'radio', req:1, when:st=>has(st,'recordatorios'), opts:[['whatsapp','Por WhatsApp','Unos céntimos por mensaje, con tarjeta en tu cuenta de Meta.'],['correo','Por correo','Gratis.']] } ]},
+ { id:'reservas', when:st=>has(st,'reservas'), t:'Reservas', d:'Lo que se puede reservar y tus normas. Lo recomendado es lo que mejor funciona en negocios con cita previa.', f:[
+   { k:'servicios', l:'Servicios que se pueden reservar', type:'rows', req:1 },
+   { k:'horario', l:'Días y horas de atención', type:'textarea', req:1 },
+   { k:'margen', l:'Margen entre citas', type:'radio', opts:[['0','Sin margen'],['15','15 min','',1],['30','30 min']], inline:1 },
+   { k:'min', l:'Antelación mínima para reservar', type:'radio', opts:[['1h','1 hora'],['3h','3 horas','',1],['24h','24 horas']], inline:1 },
+   { k:'max', l:'Antelación máxima', type:'radio', opts:[['30d','30 días'],['60d','60 días','',1],['90d','90 días']], inline:1 },
+   { k:'cancel', l:'Cancelación gratuita', type:'radio', opts:[['12h','Hasta 12 h antes'],['24h','Hasta 24 h antes','',1],['48h','Hasta 48 h antes']], inline:1 },
+   { k:'noshow', l:'Si alguien no se presenta', type:'radio', opts:[['aviso','Solo un aviso'],['prepago2','A la segunda vez, pago por adelantado','',1]] },
+   { k:'pago', l:'Formas de pago', type:'checks', grid:1, opts:[['efectivo','Efectivo'],['bizum','Bizum'],['tarjeta','Tarjeta'],['transferencia','Transferencia']] },
+   { k:'traer', l:'Qué debe traer o saber tu cliente', type:'textarea' } ]},
+ { id:'contenido', when:st=>has(st,'web'), t:'Contenido para la web', d:'Mándanoslo por WhatsApp o correo; aquí marca lo que nos vas a enviar. Solo fotos reales: tu cliente tiene que reconocer el sitio al llegar.', f:[
+   { k:'envio', l:'Lo que te mandaré', type:'checks', grid:1, opts:[['logo','Logotipo'],['fotos','4–6 fotos reales del espacio y del trabajo'],['foto_yo','Una foto mía para «Sobre mí»'],['resenas','Reseñas que quiero destacar']] },
+   { k:'formacion', l:'Tu formación y experiencia', h:'Solo datos reales: los publicaremos tal cual.', type:'textarea' },
+   { k:'maps', l:'Enlace a tu ficha de Google Maps', type:'text' },
+   { k:'redes', l:'Redes sociales que quieres enlazar', type:'text' },
+   { k:'permisos', l:'Permisos', type:'checks', req:1, all:1, opts:[['fotos','Autorizo a Vinku a usar en la web las fotos y reseñas que envíe.'],['textos','Vinku redacta los textos y yo los reviso antes de publicar.']] } ]},
+ { id:'asistente', when:st=>has(st,'web_agent')||has(st,'wa_agent')||has(st,'resumen'), t:'Asistente de IA', d:'Se presenta siempre como asistente virtual de tu negocio.', f:[
+   { k:'nombre', l:'Nombre del asistente', type:'text', ph:'Asistente de tu negocio', h:'Si lo dejas en blanco: «Asistente de» y el nombre de tu negocio.' },
+   { k:'tono', l:'Tono', type:'radio', opts:[['tu','Cercano, de tú','',1],['usted','Formal, de usted']], inline:1 },
+   { k:'faqs', l:'Preguntas que te hacen siempre, y su respuesta', type:'textarea', req:1, h:'Por ejemplo: «¿Hay parking? Sí, en la calle de al lado».' },
+   { k:'no_tratar', l:'Temas que no debe tratar', type:'textarea' },
+   { k:'pasar', l:'Cuándo debe pasarte la conversación', type:'radio', opts:[['defecto','Quejas, temas de salud, precios especiales o si la persona lo pide','',1],['otro','Otro criterio']] },
+   { k:'pasar_otro', l:'¿Cuándo?', type:'text', when:st=>st.asistente?.pasar==='otro' },
+   { k:'aviso', l:'Cómo te avisa', type:'radio', opts:[['whatsapp','Mensaje a mi WhatsApp','',1],['correo','Correo']], inline:1 },
+   { k:'resumen', l:'Resumen diario de reservas nuevas', type:'radio', when:st=>has(st,'resumen'), opts:[['si','Sí, a las 21:00 y solo si hay reservas','',1],['no','No']] },
+   { k:'resumen_canal', l:'Canal del resumen', type:'radio', when:st=>has(st,'resumen')&&st.asistente?.resumen==='si', opts:[['correo','Correo','Gratis',1],['whatsapp','WhatsApp','Unos céntimos por mensaje']] } ]},
+ { id:'legal', t:'Legal y protección de datos', d:'Tú eres el responsable de los datos de tus clientes; Vinku los trata en tu nombre como encargado del tratamiento. En webs de salud y bienestar no se usan frases como «cura» o «sana»: la ley lo regula.', f:[
+   { k:'acepto', type:'checks', req:1, all:1, opts:[['contrato','Firmaré el contrato de encargado del tratamiento con Vinku.'],['ia','Entiendo que el asistente se identifica como IA ante mis clientes.'],['salud','El asistente no pedirá datos de salud; si un cliente los menciona, me pasa la conversación.'],['revision','Comprobaré que mis datos del aviso legal y la política de privacidad son correctos antes de que publiquéis la web.']] } ]},
+ { id:'costes', t:'Costes de terceros', d:'Además de la cuota de Vinku. Cifras aproximadas.', f:[{ k:'_', type:'info' }]},
+ { id:'conformidad', t:'Conformidad', f:[
+   { k:'nombre', l:'Tu nombre', type:'text', req:1, ac:'name' },
+   { k:'conforme', type:'check', req:1, l:'Estoy conforme con lo indicado en este formulario.' } ]}
+];
+const COSTES = [['Dominio .es','7–10 € al año','Tú'],['Correo con dominio','0 € (reenvío o Zoho gratis)','Sin coste'],['Agenda de reservas (Cal.com)','0 € (plan gratuito)','Sin coste'],['WhatsApp: mensajes de respuesta','0 € hasta 1.000 al mes','Sin coste'],['WhatsApp: recordatorios y avisos','Céntimos por mensaje','Tú, con tarjeta en tu cuenta de Meta'],['IA y automatizaciones','Incluido en la cuota','Vinku'],['Publicidad, si se contrata','El presupuesto que decidas','Tú, directo a Meta o Google']];
+
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const $ = id => document.getElementById(id);
+const form = $('f');
+const token = new URLSearchParams(location.search).get('t') || '';
+const demo = !CONFIG.api;
+const KEY = 'vinku-alta-' + (token || 'demo');
+let st = {}, clientName = '';
+
+const get = (s, k) => st[s]?.[k];
+const set = (s, k, v) => { (st[s] ||= {})[k] = v; };
+const visible = sec => !sec.when || sec.when(st);
+const fVisible = f => !f.when || f.when(st);
+
+function optHTML(type, name, s, k, o, checked) {
+  const [v, label, sub, rec] = o;
+  return `<label class="opt${checked ? ' on' : ''}"><input type="${type}" name="${name}" value="${esc(v)}" data-s="${s}" data-k="${k}"${checked ? ' checked' : ''}><span><b>${esc(label)}</b>${rec ? ' <span class="badge">Recomendada</span>' : ''}${sub ? `<span class="sub">${esc(sub)}</span>` : ''}</span></label>`;
+}
+function rowsHTML(s, k) {
+  const rows = get(s, k) || [];
+  return rows.map((r, i) => `<div class="row"><label>Servicio<input type="text" value="${esc(r.nombre)}" data-s="${s}" data-k="${k}" data-row="${i}" data-col="nombre"></label><label>Minutos<input type="text" inputmode="numeric" value="${esc(r.dur)}" data-s="${s}" data-k="${k}" data-row="${i}" data-col="dur"></label><label>Precio (€)<input type="text" inputmode="decimal" value="${esc(r.precio)}" data-s="${s}" data-k="${k}" data-row="${i}" data-col="precio"></label><label class="chk"><input type="checkbox" data-s="${s}" data-k="${k}" data-row="${i}" data-col="online"${r.online ? ' checked' : ''}> Online <button type="button" class="btn x" data-del="${i}" data-s="${s}" data-k="${k}" aria-label="Quitar servicio">Quitar</button></label></div>`).join('') + `<button type="button" class="btn ghost" data-add data-s="${s}" data-k="${k}">+ Añadir servicio</button>`;
+}
+function fieldHTML(s, f) {
+  const id = `${s}__${f.k}`, v = get(s, f.k);
+  const req = f.req ? '<span class="req" aria-hidden="true">*</span>' : '';
+  const help = f.h ? `<p class="help">${esc(f.h)}</p>` : '';
+  let inner = '';
+  if (['text','tel','email'].includes(f.type))
+    inner = `<label class="lab" for="${id}">${esc(f.l)}${req}</label>${help}<input id="${id}" type="${f.type}" value="${esc(v)}" placeholder="${esc(f.ph || '')}" autocomplete="${f.ac || 'off'}" data-s="${s}" data-k="${f.k}">`;
+  else if (f.type === 'textarea')
+    inner = `<label class="lab" for="${id}">${esc(f.l)}${req}</label>${help}<textarea id="${id}" data-s="${s}" data-k="${f.k}">${esc(v)}</textarea>`;
+  else if (f.type === 'radio')
+    inner = `<fieldset>${f.l ? `<legend>${esc(f.l)}${req}</legend>` : ''}${help}<div class="${f.inline ? 'opts2' : 'rows'}">${f.opts.map(o => optHTML('radio', id, s, f.k, o, v === o[0])).join('')}</div></fieldset>`;
+  else if (f.type === 'checks')
+    inner = `<fieldset>${f.l ? `<legend>${esc(f.l)}${req}</legend>` : ''}${help}<div class="${f.grid ? 'opts2' : 'rows'}">${f.opts.map(o => optHTML('checkbox', id, s, f.k, o, (v || []).includes(o[0]))).join('')}</div></fieldset>`;
+  else if (f.type === 'check')
+    inner = optHTML('checkbox', id, s, f.k, ['1', f.l], !!v);
+  else if (f.type === 'accounts')
+    inner = `<fieldset><legend>${esc(f.l)}</legend>${help}${f.opts.map(([a, l]) => { const on = !!get(s, 'acc_' + a); return `<div class="acc">${optHTML('checkbox', id + a, s, 'acc_' + a, ['1', l], on)}<input type="text" aria-label="Usuario o enlace de ${esc(l)}" placeholder="Usuario o enlace" value="${esc(get(s, 'acc_' + a + '_v'))}" data-s="${s}" data-k="acc_${a}_v"${on ? '' : ' hidden'}></div>`; }).join('')}</fieldset>`;
+  else if (f.type === 'rows')
+    inner = `<fieldset><legend>${esc(f.l)}${req}</legend><div class="rows" id="${id}">${rowsHTML(s, f.k)}</div></fieldset>`;
+  else if (f.type === 'info')
+    inner = `<table><thead><tr><th>Concepto</th><th>Coste aproximado</th><th>Lo paga</th></tr></thead><tbody>${COSTES.map(r => `<tr>${r.map(c => `<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+  return `<div class="field" data-field="${id}">${inner}<p class="err" hidden>Falta este dato.</p></div>`;
+}
+function render() {
+  form.innerHTML = S.map(sec => `<section class="sec" id="sec-${sec.id}"><div class="sec-h"><p class="num" data-num></p><h2>${esc(sec.t)}</h2>${sec.d ? `<p class="d">${esc(sec.d)}</p>` : ''}</div>${sec.f.map(f => fieldHTML(sec.id, f)).join('')}</section>`).join('') +
+    `<div class="send"><button class="btn main" type="submit" id="sendBtn">Enviar mis respuestas</button><p class="status" id="status" role="status"></p></div>`;
+  update();
+}
+function filled(sec, f) {
+  const v = get(sec.id, f.k);
+  if (f.type === 'checks') return f.all ? f.opts.every(o => (v || []).includes(o[0])) : (v || []).length > 0;
+  if (f.type === 'rows') return (v || []).some(r => (r.nombre || '').trim());
+  if (f.type === 'check') return !!v;
+  if (f.type === 'email') return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test((v || '').trim());
+  return String(v ?? '').trim() !== '';
+}
+function update() {
+  let n = 0, total = 0, done = 0;
+  for (const sec of S) {
+    const el = $('sec-' + sec.id), show = visible(sec);
+    el.hidden = !show;
+    if (!show) continue;
+    el.querySelector('[data-num]').textContent = 'Apartado ' + (++n);
+    let ok = true;
+    for (const f of sec.f) {
+      const fe = el.querySelector(`[data-field="${sec.id}__${f.k}"]`), fv = fVisible(f);
+      fe.hidden = !fv;
+      if (fv && f.req && !filled(sec, f)) ok = false;
+    }
+    total++; if (ok) done++;
+  }
+  $('progTxt').textContent = `${done} de ${total} apartados listos`;
+  $('progBar').style.width = (total ? done / total * 100 : 0) + '%';
+}
+function save() { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) {} }
+
+form.addEventListener('input', onEdit);
+form.addEventListener('change', onEdit);
+function onEdit(e) {
+  const t = e.target, s = t.dataset.s, k = t.dataset.k;
+  if (!s || !k) return;
+  if (t.dataset.row !== undefined) {
+    const rows = get(s, k) || []; const r = rows[+t.dataset.row] ||= {};
+    r[t.dataset.col] = t.type === 'checkbox' ? t.checked : t.value; set(s, k, rows);
+  } else if (t.type === 'radio') { set(s, k, t.value); }
+  else if (t.type === 'checkbox') {
+    const f = S.find(x => x.id === s)?.f.find(x => x.k === k);
+    if (f && f.type === 'checks') { const a = new Set(get(s, k) || []); t.checked ? a.add(t.value) : a.delete(t.value); set(s, k, [...a]); }
+    else { set(s, k, t.checked); const txt = form.querySelector(`[data-s="${s}"][data-k="${k}_v"]`); if (txt) txt.hidden = !t.checked; }
+  } else set(s, k, t.value);
+  if (t.type === 'radio' || t.type === 'checkbox') t.closest('fieldset, .field')?.querySelectorAll('.opt').forEach(o => o.classList.toggle('on', o.querySelector('input').checked));
+  t.closest('.field')?.classList.remove('invalid');
+  const err = t.closest('.field')?.querySelector('.err'); if (err) err.hidden = true;
+  save(); update();
+}
+form.addEventListener('click', e => {
+  const b = e.target.closest('[data-add],[data-del]'); if (!b) return;
+  const s = b.dataset.s, k = b.dataset.k, rows = get(s, k) || [];
+  if (b.dataset.add !== undefined) rows.push({ nombre: '', dur: '', precio: '', online: true }); else rows.splice(+b.dataset.del, 1);
+  set(s, k, rows); save();
+  $(`${s}__${k}`).innerHTML = rowsHTML(s, k); update();
+});
+function collect() {
+  const answers = {};
+  for (const sec of S) {
+    if (!visible(sec) || sec.id === 'costes') continue;
+    const out = {};
+    for (const f of sec.f) {
+      if (!fVisible(f)) continue;
+      if (f.type === 'accounts') { for (const [a] of f.opts) if (get(sec.id, 'acc_' + a)) out['acc_' + a] = get(sec.id, 'acc_' + a + '_v') || true; }
+      else if (get(sec.id, f.k) !== undefined) out[f.k] = get(sec.id, f.k);
+    }
+    answers[sec.id] = out;
+  }
+  answers.conformidad = { ...(answers.conformidad || {}), fecha: new Date().toISOString() };
+  return { t: token, services: [...svc(st)], answers, state: st };
+}
+form.addEventListener('submit', async e => {
+  e.preventDefault();
+  let first = null;
+  for (const sec of S) {
+    if (!visible(sec)) continue;
+    for (const f of sec.f) {
+      if (!fVisible(f) || !f.req) continue;
+      const fe = form.querySelector(`[data-field="${sec.id}__${f.k}"]`), ok = filled(sec, f);
+      fe.classList.toggle('invalid', !ok); fe.querySelector('.err').hidden = ok;
+      if (!ok && !first) first = fe;
+    }
+  }
+  const status = $('status');
+  if (first) { status.textContent = 'Faltan algunos datos marcados en rojo.'; status.className = 'status bad'; first.scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
+  const payload = collect(), btn = $('sendBtn');
+  btn.disabled = true; status.className = 'status'; status.textContent = 'Enviando…';
+  try {
+    if (!demo) {
+      const r = await fetch(CONFIG.api, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(payload) });
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+    }
+    try { localStorage.removeItem(KEY); } catch (err) {}
+    showDone(payload);
+  } catch (err) {
+    status.textContent = 'No se ha podido enviar. Revisa tu conexión y vuelve a intentarlo; tus respuestas siguen guardadas aquí.'; status.className = 'status bad';
+  } finally { btn.disabled = false; }
+});
+function showDone(payload) {
+  form.hidden = true; $('hero').hidden = true;
+  const d = $('done'); d.hidden = false;
+  const nombre = (payload.answers.conformidad?.nombre || '').split(' ')[0];
+  d.innerHTML = `<p class="ok">Respuestas recibidas</p><h1>¡Gracias${nombre ? ', ' + esc(nombre) : ''}!</h1><p>Ya tenemos todo lo necesario. Te escribimos en breve con el calendario de puesta en marcha.</p>` +
+    (demo ? `<p class="status">Modo demostración: no se ha enviado nada. Esto es lo que se guardaría en el panel:</p><details><summary>Ver respuestas</summary><pre>${esc(JSON.stringify(payload, null, 2))}</pre></details>` : '');
+  $('progTxt').textContent = 'Enviado'; $('progBar').style.width = '100%';
+  scrollTo({ top: 0 });
+}
+function applyDefaults() {
+  for (const sec of S) for (const f of sec.f)
+    if (f.type === 'radio' && get(sec.id, f.k) === undefined) { const r = f.opts.find(o => o[3]); if (r) set(sec.id, f.k, r[0]); }
+  for (const sec of S) for (const f of sec.f)
+    if (f.type === 'rows' && !(get(sec.id, f.k) || []).length) set(sec.id, f.k, [{ nombre: '', dur: '', precio: '', online: true }]);
+}
+function start(data) {
+  clientName = data.client_name || '';
+  st = JSON.parse(JSON.stringify(data.prefill || {}));
+  if (data.services?.length && !st.servicios?.servicios) set('servicios', 'servicios', data.services);
+  try { const d = JSON.parse(localStorage.getItem(KEY) || 'null'); if (d) st = d; } catch (e) {}
+  applyDefaults();
+  if (clientName) $('title').textContent = 'Alta de ' + clientName;
+  render();
+  if (data.submitted) { const s = $('status'); s.textContent = 'Ya recibimos tus respuestas. Si cambias algo, vuelve a enviarlas.'; }
+}
+function fail(msg) {
+  $('hero').hidden = true; form.hidden = true;
+  const d = $('done'); d.hidden = false;
+  d.innerHTML = `<h1>Este enlace no funciona</h1><p>${esc(msg)} Escríbenos a hola@vinku.es y te mandamos uno nuevo.</p>`;
+  $('progTxt').textContent = '';
+}
+if (demo) start(DEMO);
+else if (!token) fail('Falta el código de acceso en el enlace.');
+else fetch(CONFIG.api + '?t=' + encodeURIComponent(token)).then(r => r.ok ? r.json() : Promise.reject(r.status)).then(start).catch(s => fail(s === 404 || s === 410 ? 'Puede que haya caducado.' : 'No hemos podido cargar tus datos.'));
+}
+</script>
+</body>
+</html>
